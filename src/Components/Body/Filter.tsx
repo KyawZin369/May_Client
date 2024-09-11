@@ -5,13 +5,20 @@ import {
   InputBase,
   InputLabel,
   MenuItem,
+  Modal,
   Select,
   styled,
   Typography,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { useState } from "react";
+import Form from "./Form";
 
-export default function Filter() {
+interface FilterProps {
+  callData: (newData: []) => void;
+}
+
+export default function  Filter({ callData } : FilterProps) {
   const Search = styled("div")(() => ({
     position: "relative",
     border: "2px solid rgba(68, 68, 68, 0.5)",
@@ -41,6 +48,16 @@ export default function Filter() {
       width: "100%",
     },
   }));
+
+  const [ open, setOpen ] = useState(false)
+
+  const handleOpen = () => {
+    setOpen(!open)
+  }
+
+  const handleClose = () => {
+    setOpen(!open)
+  }
 
   return (
     <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -103,17 +120,40 @@ export default function Filter() {
       </Box>
       <Box margin="70px 20px 20px 20px">
         <Box>
-          <Button variant="contained" fullWidth sx={{ backgroundColor: "#54BAB9" }}>+ Add New Patient</Button>
+          <Button
+            variant="contained"
+            fullWidth
+            sx={{ backgroundColor: "#54BAB9" }}
+            onClick={()=>handleOpen()}
+          >
+            + Add New Patient
+          </Button>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            sx={{ display: 'flex', alignItems: "center", justifyContent: "center",}}
+            
+          >
+            <Box bgcolor="white"  padding="50px" borderRadius="10px">
+                <Box width="100%" marginBottom="30px">
+                  <Typography variant="h5" color="#54BAB9" fontWeight="bolder" textAlign="center">Add New Patient</Typography>
+                  <Typography textAlign="center" fontSize="15px" fontWeight="800">Enter New Patient information Below</Typography>
+                </Box>
+                <Form handleClose={handleClose} callData={callData} />
+            </Box>
+          </Modal>
         </Box>
         <Box display="flex" marginTop="20px" alignItems="center">
-          <Typography fontWeight={900} marginRight="10px">Row Per Page: </Typography>
+          <Typography fontWeight={900} marginRight="10px">
+            Row Per Page:{" "}
+          </Typography>
           <FormControl sx={{ width: "70px" }}>
-              <Select sx={{ height: "35px", borderRadius: "15px" }}>
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={20}>20</MenuItem>
-                <MenuItem value={30}>30</MenuItem>
-              </Select>
-            </FormControl>
+            <Select sx={{ height: "35px", borderRadius: "15px" }}>
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={20}>20</MenuItem>
+              <MenuItem value={30}>30</MenuItem>
+            </Select>
+          </FormControl>
         </Box>
       </Box>
     </Box>

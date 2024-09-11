@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Modal,
   Paper,
   Popover,
   Stack,
@@ -10,51 +11,48 @@ import {
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import dayjs from "dayjs";
 import { useState } from "react";
+import Form from "./Form";
+import { patientTable } from "../../type";
 
-type patientTable = {
-  id: string;
-  petName: string;
-  status: boolean;
-  pawrent: string;
-  breed: string;
-  gender: string;
-  DateOfBirth: Date;
-  PhoneNo: string;
-  Address: string;
-};
 
 const StatusImage = (status: boolean) => {
   switch (status) {
     case true:
-      return (
-        <img
-          src="../../../public/resources/picky eater.png"
-          alt="picky eater"
-        />
-      );
+      return <img src="/resources/picky eater.png" alt="picky eater" />;
     case false:
-      return <img src="../../../public/resources/allergy.png" alt="allergy" />;
+      return <img src="/resources/allergy.png" alt="allergy" />;
   }
 };
 
 const StyledDataGrid = styled(DataGrid)(() => ({
   "& .MuiDataGrid-columnHeader": {
     color: "#54BAB9",
-    fontWeight: "900"
+    fontWeight: "900",
   },
 }));
 
-
 const Action = () => {
+
+
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handlePopOverClose = () => {
     setAnchorEl(null);
   };
+
+  const [ modalopen, setOpen ] = useState(false)
+
+  const handleOpen = () => {
+    setOpen(!modalopen)
+  }
+
+  const handleClose = () => {
+    setOpen(false)
+  }
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
@@ -72,7 +70,7 @@ const Action = () => {
         id={id}
         open={open}
         anchorEl={anchorEl}
-        onClose={handleClose}
+        onClose={handlePopOverClose}
         anchorOrigin={{
           vertical: "center",
           horizontal: "left",
@@ -80,14 +78,46 @@ const Action = () => {
         sx={{ width: "300px" }}
       >
         <Box width="130px" display="flex" flexDirection="column">
-          <Button fullWidth sx={{ display: "flex", justifyContent: "start" }}>
-            <img
-              src="../../../public/resources/edit.png"
-              alt=""
-              style={{ marginRight: "20px" }}
-            />
-            <Typography fontWeight="900">Edit</Typography>
-          </Button>
+          <Box>
+            <Button fullWidth sx={{ display: "flex", justifyContent: "start" }} onClick={handleOpen}>
+              <img
+                src="../../../public/resources/edit.png"
+                alt=""
+                style={{ marginRight: "20px" }}
+              />
+              <Typography fontWeight="900">Edit</Typography>
+            </Button>
+            <Modal
+              open={modalopen}
+              onClose={() => handleClose()}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Box bgcolor="white" padding="50px" borderRadius="10px">
+                <Box width="100%" marginBottom="30px">
+                  <Typography
+                    variant="h5"
+                    color="#54BAB9"
+                    fontWeight="bolder"
+                    textAlign="center"
+                  >
+                    Add New Patient
+                  </Typography>
+                  <Typography
+                    textAlign="center"
+                    fontSize="15px"
+                    fontWeight="800"
+                  >
+                    Enter New Patient information Below
+                  </Typography>
+                </Box>
+                <Form handleClose={handleClose}  />
+              </Box>
+            </Modal>
+          </Box>
           <Button fullWidth sx={{ display: "flex", justifyContent: "start" }}>
             <img
               src="../../../public/resources/delete.png"
@@ -125,8 +155,8 @@ const columns: GridColDef[] = [
   { field: "Action", headerName: "", width: 130, renderCell: () => Action() },
 ];
 
-// Data based on the screenshot
-const DUMMY_DATA_ROW: patientTable[] = [
+
+export const DUMMY_DATA_ROW: patientTable[] = [
   {
     id: "B-0025",
     petName: "Milo",
@@ -185,12 +215,11 @@ const DUMMY_DATA_ROW: patientTable[] = [
 ];
 
 // Main Table component
-export default function Table() {
-
+export default function Table({data}) {
   return (
     <Paper sx={{ height: 400, width: "100%", border: 0 }}>
       <StyledDataGrid
-        rows={DUMMY_DATA_ROW}
+        rows={data}
         columns={columns}
         checkboxSelection
         sx={{ border: 0 }}
