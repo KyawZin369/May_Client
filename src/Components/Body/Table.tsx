@@ -1,9 +1,12 @@
 import {
+  Alert,
   Box,
   Button,
+  IconButton,
   Modal,
   Paper,
   Popover,
+  Snackbar,
   Stack,
   styled,
   Typography,
@@ -13,17 +16,21 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import Form from "./Form";
 import { patientTable } from "../../type";
+import CloseIcon from "@mui/icons-material/Close";
 
-
-const StatusImage = (status: boolean) => {
+// StatusImage function to render the image based on status
+const StatusImage = (status: string) => {
   switch (status) {
-    case true:
+    case "Food Allergy":
       return <img src="/resources/picky eater.png" alt="picky eater" />;
-    case false:
+    case "Picky eater":
       return <img src="/resources/allergy.png" alt="allergy" />;
+    default:
+      return null;
   }
 };
 
+// Styled DataGrid component
 const StyledDataGrid = styled(DataGrid)(() => ({
   "& .MuiDataGrid-columnHeader": {
     color: "#54BAB9",
@@ -31,9 +38,14 @@ const StyledDataGrid = styled(DataGrid)(() => ({
   },
 }));
 
-const Action = () => {
-
-
+// Action component now accepts an id and onDelete function as props
+const Action = ({
+  onDelete,
+  id,
+}: {
+  onDelete: (id: string) => void;
+  id: string;
+}) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -44,30 +56,34 @@ const Action = () => {
     setAnchorEl(null);
   };
 
-  const [ modalopen, setOpen ] = useState(false)
+  const [modalopen, setOpen] = useState(false);
 
   const handleOpen = () => {
-    setOpen(!modalopen)
-  }
+    setOpen(!modalopen);
+  };
 
   const handleClose = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
+  const idPopover = open ? "simple-popover" : undefined;
+
+  const [ UpdateData, setUpdateData ] = useState<patientTable>();
+
+  console.log(UpdateData)
 
   return (
     <Stack>
-      <Button aria-describedby={id} onClick={handleClick}>
+      <Button aria-describedby={idPopover} onClick={handleClick}>
         <img
           src="/resources/more.png"
           style={{ height: "20px", width: "20px", margin: "10px" }}
-          alt=""
+          alt="more options"
         />
       </Button>
       <Popover
-        id={id}
+        id={idPopover}
         open={open}
         anchorEl={anchorEl}
         onClose={handlePopOverClose}
@@ -79,10 +95,14 @@ const Action = () => {
       >
         <Box width="130px" display="flex" flexDirection="column">
           <Box>
-            <Button fullWidth sx={{ display: "flex", justifyContent: "start" }} onClick={handleOpen}>
+            <Button
+              fullWidth
+              sx={{ display: "flex", justifyContent: "start" }}
+              onClick={handleOpen}
+            >
               <img
                 src="../../../public/resources/edit.png"
-                alt=""
+                alt="edit"
                 style={{ marginRight: "20px" }}
               />
               <Typography fontWeight="900">Edit</Typography>
@@ -104,24 +124,28 @@ const Action = () => {
                     fontWeight="bolder"
                     textAlign="center"
                   >
-                    Add New Patient
+                    Update Patient
                   </Typography>
                   <Typography
                     textAlign="center"
                     fontSize="15px"
                     fontWeight="800"
                   >
-                    Enter New Patient information Below
+                    Enter Update Patient information Below
                   </Typography>
                 </Box>
-                <Form handleClose={handleClose}  />
+                <Form handleClose={handleClose} setUpdateData={setUpdateData}/>
               </Box>
             </Modal>
           </Box>
-          <Button fullWidth sx={{ display: "flex", justifyContent: "start" }}>
+          <Button
+            fullWidth
+            sx={{ display: "flex", justifyContent: "start" }}
+            onClick={() => onDelete(id)}
+          >
             <img
               src="../../../public/resources/delete.png"
-              alt=""
+              alt="delete"
               style={{ marginRight: "20px" }}
             />
             <Typography fontWeight="900">Delete</Typography>
@@ -132,6 +156,7 @@ const Action = () => {
   );
 };
 
+// Define columns with the updated Action column
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 130 },
   { field: "petName", headerName: "Pet Name", width: 130 },
@@ -152,15 +177,19 @@ const columns: GridColDef[] = [
   },
   { field: "PhoneNo", headerName: "Contact Phone No.", width: 130 },
   { field: "Address", headerName: "Address", width: 130 },
-  { field: "Action", headerName: "", width: 130, renderCell: () => Action() },
+  {
+    field: "Action",
+    headerName: "",
+    width: 130,
+  },
 ];
 
-
+// Initial dummy data
 export const DUMMY_DATA_ROW: patientTable[] = [
   {
     id: "B-0025",
     petName: "Milo",
-    status: false,
+    status: "Picky eater",
     pawrent: "The' Nu San",
     breed: "Beagle",
     gender: "Male",
@@ -171,7 +200,7 @@ export const DUMMY_DATA_ROW: patientTable[] = [
   {
     id: "S-0189",
     petName: "MJ",
-    status: false,
+    status: "Picky eater",
     pawrent: "Naychi Lin",
     breed: "Spaniel",
     gender: "Female",
@@ -182,7 +211,7 @@ export const DUMMY_DATA_ROW: patientTable[] = [
   {
     id: "G-0089",
     petName: "Lu Lu",
-    status: true,
+    status: "Picky eater",
     pawrent: "Pink Pink",
     breed: "Golden Retriever",
     gender: "Female",
@@ -193,7 +222,7 @@ export const DUMMY_DATA_ROW: patientTable[] = [
   {
     id: "G-0090",
     petName: "Sky",
-    status: true,
+    status: "Food Allergy",
     pawrent: "Kyaw Myo Oo",
     breed: "Golden Retriever",
     gender: "Male",
@@ -202,9 +231,9 @@ export const DUMMY_DATA_ROW: patientTable[] = [
     Address: "Sanchaung, Yangon",
   },
   {
-    id: "G-0089",
-    petName: "Lu Lu",
-    status: true,
+    id: "G-0080",
+    petName: "Lul Lul",
+    status: "Food Allergy",
     pawrent: "Pink Pink",
     breed: "Golden Retriever",
     gender: "Female",
@@ -214,16 +243,61 @@ export const DUMMY_DATA_ROW: patientTable[] = [
   },
 ];
 
-// Main Table component
-export default function Table({data}) {
+// Main Table component with delete functionality
+interface TableProps {
+  initialData: patientTable[];
+  openSnackBar: boolean;
+  handleSnackBarClose: () => void;
+  handleDelete: () => void;
+  actionType: string
+}
+
+export default function Table({
+  initialData,
+  openSnackBar,
+  handleSnackBarClose,
+  handleDelete,
+  actionType
+}: TableProps) {
+  console.log(initialData);
+
   return (
     <Paper sx={{ height: 400, width: "100%", border: 0 }}>
       <StyledDataGrid
-        rows={data}
-        columns={columns}
+        pagination
+        rows={initialData}
+        columns={columns.map((col) => {
+          if (col.field === "Action") {
+            return {
+              ...col,
+              renderCell: (params) => (
+                <Action id={params.row.id} onDelete={handleDelete} />
+              ),
+            };
+          }
+          return col;
+        })}
         checkboxSelection
         sx={{ border: 0 }}
       />
+      <Snackbar
+        open={openSnackBar}
+        autoHideDuration={6000}
+        onClose={handleSnackBarClose}
+      >
+        <Alert severity="success" variant="filled">
+          Patient is successfully { actionType == "create" ? "create" : "delete" } {" "}
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={handleSnackBarClose}
+            sx={{ marginLeft: "40px" }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Alert>
+      </Snackbar>
     </Paper>
   );
 }

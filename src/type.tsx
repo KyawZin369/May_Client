@@ -1,4 +1,4 @@
-import { Dayjs } from "dayjs";
+
 
 // export interface NewPatient {
 //     PetName: string;
@@ -16,7 +16,7 @@ import { Dayjs } from "dayjs";
  export type patientTable = {
     id: string;
     petName: string;
-    status: boolean;
+    status: string;
     pawrent: string;
     breed: string;
     gender: string;

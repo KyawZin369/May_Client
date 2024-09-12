@@ -18,16 +18,17 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
-import { NewPatient } from "../../type";
+import { NewPatient, patientTable } from "../../type";
 import generateID from "../../utils/GrenratedId";
-
 
 interface FormProps {
   handleClose: () => void;
-  callData?: (data: NewPatient) => void;
+  callData?: (data: patientTable) => void;
+  setOpenSnackBar?: (setData: boolean) => void;
+  setUpdateData ?: (updateData : patientTable) => void
 }
 
-const Form = ({ handleClose, callData }: FormProps) => {
+const Form = ({ handleClose, callData, setOpenSnackBar, setUpdateData }: FormProps) => {
   const { control, handleSubmit, setValue, watch } = useForm<NewPatient>({
     defaultValues: {
       PetName: "",
@@ -44,11 +45,24 @@ const Form = ({ handleClose, callData }: FormProps) => {
   });
 
   const onSubmit: SubmitHandler<NewPatient> = (data) => {
+    const combinedLocation = `${data.Township}, ${data.City}`;
+
     if (callData) {
       callData({
         id: generateID(),
-        ...data
+        ...data,
+        Address: combinedLocation,
       });
+    }
+
+    handleClose();
+    
+    if (setOpenSnackBar) {
+      setOpenSnackBar(true);
+    }
+
+    if(setUpdateData){
+      setUpdateData(data)
     }
   };
 
@@ -57,11 +71,11 @@ const Form = ({ handleClose, callData }: FormProps) => {
   const [value, setValues] = useState<Dayjs | null>(dayjs("2022-04-17"));
 
   const handleStatusChange = (event: SelectChangeEvent) => {
-    setValue("Status", event.target.value);
+    setValue("status", event.target.value);
   };
 
   const handleBreedChange = (event: SelectChangeEvent) => {
-    setValue("Breed", event.target.value);
+    setValue("breed", event.target.value);
   };
 
   return (
@@ -77,21 +91,21 @@ const Form = ({ handleClose, callData }: FormProps) => {
       <Box maxWidth="600px" display="flex" flexDirection="row" p={2} gap={4}>
         <Box flex={2} display="flex" flexDirection="column" gap={3}>
           <Controller
-            name="PetName"
+            name="petName"
             control={control}
             render={({ field }) => (
               <TextField {...field} label="Pet Name" size="small" />
             )}
           />
           <Controller
-            name="Pawrent"
+            name="pawrent"
             control={control}
             render={({ field }) => (
               <TextField {...field} label="Pawrent" size="small" />
             )}
           />
           <Controller
-            name="Gender"
+            name="gender"
             control={control}
             render={({ field }) => (
               <FormControl>
@@ -112,7 +126,7 @@ const Form = ({ handleClose, callData }: FormProps) => {
             )}
           />
           <Controller
-            name="PhoneNumber"
+            name="PhoneNo"
             control={control}
             render={({ field }) => (
               <TextField {...field} label="Contact Phone Number" size="small" />
@@ -128,7 +142,7 @@ const Form = ({ handleClose, callData }: FormProps) => {
         </Box>
         <Box flex={2} display="flex" flexDirection="column" gap={3}>
           <Controller
-            name="Status"
+            name="status"
             control={control}
             render={({ field }) => (
               <Box sx={{ minWidth: 120 }}>
@@ -136,7 +150,7 @@ const Form = ({ handleClose, callData }: FormProps) => {
                   <InputLabel>Status</InputLabel>
                   <Select
                     {...field}
-                    value={watch("Status")}
+                    value={watch("status")}
                     label="Status"
                     onChange={handleStatusChange}
                   >
@@ -148,7 +162,7 @@ const Form = ({ handleClose, callData }: FormProps) => {
             )}
           />
           <Controller
-            name="Breed"
+            name="breed"
             control={control}
             render={({ field }) => (
               <Box sx={{ minWidth: 120 }}>
@@ -156,7 +170,7 @@ const Form = ({ handleClose, callData }: FormProps) => {
                   <InputLabel>Breed</InputLabel>
                   <Select
                     {...field}
-                    value={watch("Breed")}
+                    value={watch("breed")}
                     label="Breed"
                     onChange={handleBreedChange}
                   >
@@ -217,6 +231,7 @@ const Form = ({ handleClose, callData }: FormProps) => {
         >
           Add
         </Button>
+
         <Button
           onClick={() => handleClose()}
           variant="outlined"

@@ -13,12 +13,14 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
 import Form from "./Form";
+import { patientTable } from "../../type";
 
 interface FilterProps {
-  callData: (newData: []) => void;
+  callData: (newData: patientTable) => void;
+  setOpenSnackBar: (setData : boolean) => void;
 }
 
-export default function  Filter({ callData } : FilterProps) {
+export default function  Filter({ callData , setOpenSnackBar} : FilterProps) {
   const Search = styled("div")(() => ({
     position: "relative",
     border: "2px solid rgba(68, 68, 68, 0.5)",
@@ -58,6 +60,7 @@ export default function  Filter({ callData } : FilterProps) {
   const handleClose = () => {
     setOpen(!open)
   }
+
 
   return (
     <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -132,14 +135,13 @@ export default function  Filter({ callData } : FilterProps) {
             open={open}
             onClose={handleClose}
             sx={{ display: 'flex', alignItems: "center", justifyContent: "center",}}
-            
           >
             <Box bgcolor="white"  padding="50px" borderRadius="10px">
                 <Box width="100%" marginBottom="30px">
                   <Typography variant="h5" color="#54BAB9" fontWeight="bolder" textAlign="center">Add New Patient</Typography>
                   <Typography textAlign="center" fontSize="15px" fontWeight="800">Enter New Patient information Below</Typography>
                 </Box>
-                <Form handleClose={handleClose} callData={callData} />
+                <Form handleClose={handleClose} callData={callData} setOpenSnackBar={setOpenSnackBar} />
             </Box>
           </Modal>
         </Box>
