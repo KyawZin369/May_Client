@@ -42,12 +42,19 @@ const StyledDataGrid = styled(DataGrid)(() => ({
 const Action = ({
   onDelete,
   id,
+  actionType,
+  updateHandler,
+  data,
+  handleClickEditPatient
 }: {
   onDelete: (id: string) => void;
   id: string;
+  actionType: string;
+  updateHandler: (updateDataid: string, updateData: patientTable) => void;
+  data: patientTable;
+  handleClickEditPatient: () => void
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -68,10 +75,6 @@ const Action = ({
 
   const open = Boolean(anchorEl);
   const idPopover = open ? "simple-popover" : undefined;
-
-  const [ UpdateData, setUpdateData ] = useState<patientTable>();
-
-  console.log(UpdateData)
 
   return (
     <Stack>
@@ -98,7 +101,10 @@ const Action = ({
             <Button
               fullWidth
               sx={{ display: "flex", justifyContent: "start" }}
-              onClick={handleOpen}
+              onClick={() => {
+                handleOpen();
+                handleClickEditPatient()
+              }}
             >
               <img
                 src="../../../public/resources/edit.png"
@@ -134,14 +140,22 @@ const Action = ({
                     Enter Update Patient information Below
                   </Typography>
                 </Box>
-                <Form handleClose={handleClose} setUpdateData={setUpdateData}/>
+                <Form
+                  handleClose={handleClose}
+                  updateHandler={updateHandler}
+                  actionType={actionType}
+                  data={data}
+                />
               </Box>
             </Modal>
           </Box>
           <Button
             fullWidth
             sx={{ display: "flex", justifyContent: "start" }}
-            onClick={() => onDelete(id)}
+            onClick={() => {
+              onDelete(id);
+              handlePopOverClose()
+            }}
           >
             <img
               src="../../../public/resources/delete.png"
@@ -249,7 +263,11 @@ interface TableProps {
   openSnackBar: boolean;
   handleSnackBarClose: () => void;
   handleDelete: () => void;
-  actionType: string
+  actionType: string;
+  updateHandler: (updateDataid: string, updateData: patientTable) => void;
+  handleClickEditPatient: ()=> void;
+  isFilter: boolean;
+  filteredData: patientTable[]
 }
 
 export default function Table({
@@ -257,21 +275,37 @@ export default function Table({
   openSnackBar,
   handleSnackBarClose,
   handleDelete,
-  actionType
+  actionType,
+  updateHandler,
+  handleClickEditPatient,
+  isFilter,
+  filteredData
 }: TableProps) {
-  console.log(initialData);
+
+  console.log(isFilter)
+
+  console.log(initialData)
+
+  console.log(filteredData)
 
   return (
     <Paper sx={{ height: 400, width: "100%", border: 0 }}>
       <StyledDataGrid
         pagination
-        rows={initialData}
+        rows={isFilter ? filteredData : initialData}
         columns={columns.map((col) => {
           if (col.field === "Action") {
             return {
               ...col,
               renderCell: (params) => (
-                <Action id={params.row.id} onDelete={handleDelete} />
+                <Action
+                  data={params.row}
+                  id={params.row.id}
+                  onDelete={handleDelete}
+                  actionType={actionType}
+                  updateHandler={updateHandler}
+                  handleClickEditPatient={handleClickEditPatient}
+                />
               ),
             };
           }
@@ -286,7 +320,7 @@ export default function Table({
         onClose={handleSnackBarClose}
       >
         <Alert severity="success" variant="filled">
-          Patient is successfully { actionType == "create" ? "create" : "delete" } {" "}
+        Patient is successfully {actionType === "create" ? "Created" : actionType === "delete" ? "Deleted" : actionType === "update" ? "Updated" : "Invalid" }{" "}
           <IconButton
             size="small"
             aria-label="close"

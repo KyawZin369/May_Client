@@ -17,7 +17,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NewPatient, patientTable } from "../../type";
 import generateID from "../../utils/GrenratedId";
 
@@ -25,45 +25,77 @@ interface FormProps {
   handleClose: () => void;
   callData?: (data: patientTable) => void;
   setOpenSnackBar?: (setData: boolean) => void;
-  setUpdateData ?: (updateData : patientTable) => void
+  updateHandler: (updateDataid: string, updateData: patientTable) => void;
+  actionType: string;
+  data: patientTable;
 }
 
-const Form = ({ handleClose, callData, setOpenSnackBar, setUpdateData }: FormProps) => {
-  const { control, handleSubmit, setValue, watch } = useForm<NewPatient>({
-    defaultValues: {
-      PetName: "",
-      Pawrent: "",
-      Gender: "",
-      PhoneNumber: "",
-      City: "",
-      Status: "",
-      Breed: "",
-      DateOfBirth: dayjs(),
-      Address: "",
-      Township: "",
-    },
-  });
-
-  const onSubmit: SubmitHandler<NewPatient> = (data) => {
-    const combinedLocation = `${data.Township}, ${data.City}`;
-
-    if (callData) {
-      callData({
-        id: generateID(),
-        ...data,
-        Address: combinedLocation,
-      });
+const Form = ({
+  handleClose,
+  callData,
+  setOpenSnackBar,
+  actionType = "create",
+  data,
+  updateHandler,
+}: FormProps) => {
+  const { control, handleSubmit, setValue, watch, reset } = useForm<NewPatient>(
+    {
+      defaultValues: {
+        id: "",
+        petName: "",
+        status: "",
+        pawrent: "",
+        breed: "",
+        gender: "",
+        PhoneNo: "",
+        Address: "",
+        City: "",
+        DateOfBirth: dayjs(),
+        Township: "",
+      },
     }
+  );
+
+
+  useEffect(() => {
+    if (actionType === "update") {
+      setValue("petName", data.petName);
+      setValue("pawrent", data.pawrent);
+      setValue("breed", data.breed);
+      setValue("gender", data.gender);
+      setValue("DateOfBirth", data.DateOfBirth);
+      setValue("PhoneNo", data.PhoneNo);
+      setValue("Address", data.Address);
+    } else if (actionType === "create") {
+      reset();
+    }
+  }, [data, actionType]);
+
+  const onSubmit: SubmitHandler<NewPatient> = (formData) => {
+    const combinedLocation = `${formData.Township}, ${formData.City}`;
+
+      if (callData) {
+        callData({
+          ...formData,
+          id: generateID(),
+          Address: combinedLocation,
+        });
+      }
 
     handleClose();
-    
+
     if (setOpenSnackBar) {
       setOpenSnackBar(true);
     }
 
-    if(setUpdateData){
-      setUpdateData(data)
-    }
+    console.log(data.id)
+
+
+      if (updateHandler) {
+        updateHandler(data.id, formData);
+      }
+
+    console.log(data)
   };
 
   // const [status, setStatus] = useState<string>("");
@@ -229,7 +261,7 @@ const Form = ({ handleClose, callData, setOpenSnackBar, setUpdateData }: FormPro
             color: "white",
           }}
         >
-          Add
+          { actionType === "create" ? "Add" : "Update" }
         </Button>
 
         <Button
