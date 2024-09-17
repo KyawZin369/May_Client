@@ -25,9 +25,9 @@ interface FormProps {
   handleClose: () => void;
   callData?: (data: patientTable) => void;
   setOpenSnackBar?: (setData: boolean) => void;
-  updateHandler: (updateDataid: string, updateData: patientTable) => void;
-  actionType: string;
-  data: patientTable;
+  updateHandler?: (updateDataid: string, updateData: patientTable) => void;
+  actionType?: string;
+  data?: patientTable;
 }
 
 const Form = ({
@@ -50,7 +50,7 @@ const Form = ({
         PhoneNo: "",
         Address: "",
         City: "",
-        DateOfBirth: dayjs(),
+        DateOfBirth: new Date(),
         Township: "",
       },
     }
@@ -59,13 +59,15 @@ const Form = ({
 
   useEffect(() => {
     if (actionType === "update") {
-      setValue("petName", data.petName);
-      setValue("pawrent", data.pawrent);
-      setValue("breed", data.breed);
-      setValue("gender", data.gender);
-      setValue("DateOfBirth", data.DateOfBirth);
-      setValue("PhoneNo", data.PhoneNo);
-      setValue("Address", data.Address);
+      if(data){
+        setValue("petName", data.petName);
+        setValue("pawrent", data.pawrent);
+        setValue("breed", data.breed);
+        setValue("gender", data.gender);
+        setValue("DateOfBirth", data.DateOfBirth);
+        setValue("PhoneNo", data.PhoneNo);
+        setValue("Address", data.Address);
+      }
     } else if (actionType === "create") {
       reset();
     }
@@ -88,11 +90,9 @@ const Form = ({
       setOpenSnackBar(true);
     }
 
-    console.log(data.id)
-
 
       if (updateHandler) {
-        updateHandler(data.id, formData);
+        updateHandler(formData.id, formData);
       }
 
     console.log(data)

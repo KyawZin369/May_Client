@@ -3,7 +3,6 @@ import Filter from "./Filter";
 import Table, { DUMMY_DATA_ROW } from "./Table";
 import { useEffect, useState } from "react";
 import { patientTable } from "../../type";
-import React from "react";
 
 export default function Main() {
   const [data, setData] = useState(DUMMY_DATA_ROW);
@@ -45,7 +44,6 @@ export default function Main() {
   console.log(data);
 
   const handleSnackBarClose = (
-    event: React.SyntheticEvent | Event,
     reason?: SnackbarCloseReason
   ) => {
     if (reason === "clickaway") {
@@ -113,7 +111,6 @@ export default function Main() {
         <Filter
           callData={callData}
           setOpenSnackBar={setOpenSnackBar}
-          actionType={actionType}
           handleClickAddPatient={handleClickAddPatient}
           setPetNameFilter={setPetNameFilter}
           petNameFilter={petNameFilter}

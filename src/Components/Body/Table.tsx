@@ -51,10 +51,9 @@ const Action = ({
   id: string;
   actionType: string;
   updateHandler: (updateDataid: string, updateData: patientTable) => void;
-  data: patientTable;
+  data?: patientTable | undefined;
   handleClickEditPatient: () => void;
 }) => {
-
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -268,7 +267,7 @@ interface TableProps {
   initialData: patientTable[];
   openSnackBar: boolean;
   handleSnackBarClose: () => void;
-  handleDelete: () => void;
+  handleDelete: (id : string) => void;
   actionType: string;
   updateHandler: (updateDataid: string, updateData: patientTable) => void;
   handleClickEditPatient: () => void;
@@ -313,16 +312,18 @@ export default function Table({
           if (col.field === "Action") {
             return {
               ...col,
-              renderCell: (params) => (
+              renderCell: (params) =>{
+                const rowData = params.row as patientTable;
+                return (
                 <Action
-                  data={params.row}
+                  data={rowData}
                   id={params.row.id}
                   onDelete={handleDelete}
                   actionType={actionType}
                   updateHandler={updateHandler}
                   handleClickEditPatient={handleClickEditPatient}
                 />
-              ),
+              )},
             };
           }
           return col;
