@@ -19,8 +19,12 @@ interface FilterProps {
   callData: (newData: patientTable) => void;
   setOpenSnackBar: (setData: boolean) => void;
   handleClickAddPatient: () => void;
-  setPetNameFilter : ( petName : string ) => void;
-  petNameFilter : string;
+  setPetNameFilter: (petName: string) => void;
+  petNameFilter: string;
+  statusAllFilter: string | undefined;
+  setStatusAllFilter: (statusData : string) => void;
+  BreedAllFilter : string | undefined;
+  setBreedAllFilter: (breedData : string) => void
 }
 
 const Search = styled("div")(() => ({
@@ -58,10 +62,13 @@ export default function Filter({
   setOpenSnackBar,
   handleClickAddPatient,
   setPetNameFilter,
-  petNameFilter
+  petNameFilter,
+  statusAllFilter,
+  setStatusAllFilter,
+  BreedAllFilter,
+  setBreedAllFilter
 }: FilterProps) {
   const [open, setOpen] = useState(false);
-
 
   const handleOpen = () => setOpen(!open);
   const handleClose = () => setOpen(!open);
@@ -88,47 +95,38 @@ export default function Filter({
           </Search>
         </Box>
         <Box display="flex" maxWidth="300px" marginTop="20px">
-          <Box width="140px" marginRight="20px">
-            <FormControl fullWidth>
-              <InputLabel
-                id="status-select-label"
-                sx={{
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  marginLeft: "25px",
-                }}
-              >
+          <Box width="140px" marginRight={2}>
+            <FormControl fullWidth size="small">
+              <InputLabel id="breed-select-label">
                 <Typography fontWeight={800}>Status All</Typography>
               </InputLabel>
               <Select
-                labelId="status-select-label"
-                sx={{ height: "35px", borderRadius: "15px" }}
+                labelId="breed-select-label"
+                sx={{ borderRadius: "15px" }}
+                label="Breed All"
+                value={statusAllFilter}
+                onChange={(e)=>setStatusAllFilter(e.target.value)}
               >
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                <MenuItem value={"Picky eater"}>Picky eater</MenuItem>
+                <MenuItem value={"Food Allergy"}>Food Allergy</MenuItem>
               </Select>
             </FormControl>
           </Box>
           <Box width="140px">
-            <FormControl fullWidth>
-              <InputLabel
-                id="breed-select-label"
-                sx={{
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  marginLeft: "25px",
-                }}
-              >
+            <FormControl fullWidth size="small">
+              <InputLabel id="breed-select-label">
                 <Typography fontWeight={800}>Breed All</Typography>
               </InputLabel>
               <Select
                 labelId="breed-select-label"
-                sx={{ height: "35px", borderRadius: "15px" }}
+                sx={{ borderRadius: "15px" }}
+                label="Breed All"
+                value={BreedAllFilter}
+                onChange={(e)=>setBreedAllFilter(e.target.value)}
               >
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                <MenuItem value={"Beagle"}>Beagle</MenuItem>
+                <MenuItem value={"Spaniel"}>Spaniel</MenuItem>
+                <MenuItem value={"Golden Retriever"}>Golden Retriever</MenuItem>
               </Select>
             </FormControl>
           </Box>

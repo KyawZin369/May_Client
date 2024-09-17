@@ -14,10 +14,14 @@ export default function Main() {
   const [openSnackBar, setOpenSnackBar] = useState(false);
 
   const [petNameFilter, setPetNameFilter] = useState("");
-
   const [filteredData, setFilteredData] = useState<patientTable[]>([]);
+  const [isFilter, setIsFilter] = useState<boolean>(false);
 
-  const [isFilter, setIsFilter] = useState<boolean>(true);
+  const [ statusAllFilter, setStatusAllFilter ] = useState<string>()
+  const [ isStatusFilter , setIsStatusFilter ] = useState<boolean>(false)
+
+  const [ BreedAllFilter, setBreedAllFilter ] = useState<string>()
+  const [ IsBreedAll , setIsAllBreedAll ] = useState<boolean>(false)
 
   const callData = (calledData: patientTable) => {
     setActionType("create");
@@ -65,18 +69,46 @@ export default function Main() {
   };
 
   useEffect(() => {
-    if (isFilter) {
+    if (petNameFilter) {
       const filterText = petNameFilter.toLowerCase();
       const filterData = data.filter((item) =>
         item.petName?.toLowerCase().includes(filterText)
       );
       setFilteredData(filterData);
-      setIsFilter(true);
+      setIsFilter(true)
+    }else{
+      setIsFilter(false)
     }
   }, [data, petNameFilter]);
 
+
+  useEffect(()=>{
+    if(statusAllFilter){
+      const statusAll = data.filter((item)=> item.status === statusAllFilter)
+      setFilteredData(statusAll)
+      setIsStatusFilter(true)
+    }else{
+      setIsStatusFilter(false)
+    }
+  },[data, statusAllFilter])
+
+
+  useEffect(()=>{
+    if(BreedAllFilter){
+      const BreedAll = data.filter((item) => item.breed === BreedAllFilter)
+      setFilteredData(BreedAll)
+      setIsAllBreedAll(true)
+    }else{
+      setIsAllBreedAll(false)
+    }
+  },[data, BreedAllFilter])
+
+  console.log(BreedAllFilter)
+
+  console.log(filteredData)
+
   return (
-    <Stack height="85vh" bgcolor="#F7ECDE">
+    <Stack height="99vh" bgcolor="#F7ECDE">
       <Box height="100%" bgcolor="white" margin="15px">
         <Filter
           callData={callData}
@@ -85,6 +117,10 @@ export default function Main() {
           handleClickAddPatient={handleClickAddPatient}
           setPetNameFilter={setPetNameFilter}
           petNameFilter={petNameFilter}
+          statusAllFilter = {statusAllFilter}
+          setStatusAllFilter = {setStatusAllFilter}
+          BreedAllFilter={BreedAllFilter}
+          setBreedAllFilter={setBreedAllFilter}
         />
         <Table
           initialData={data}
@@ -96,6 +132,8 @@ export default function Main() {
           updateHandler={updateHandler}
           handleClickEditPatient={handleClickEditPatient}
           isFilter={isFilter}
+          isStatusFilter={isStatusFilter}
+          IsBreedAll={IsBreedAll}
         />
       </Box>
     </Stack>

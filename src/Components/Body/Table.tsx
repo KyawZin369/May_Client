@@ -45,15 +45,17 @@ const Action = ({
   actionType,
   updateHandler,
   data,
-  handleClickEditPatient
+  handleClickEditPatient,
 }: {
   onDelete: (id: string) => void;
   id: string;
   actionType: string;
   updateHandler: (updateDataid: string, updateData: patientTable) => void;
   data: patientTable;
-  handleClickEditPatient: () => void
+  handleClickEditPatient: () => void;
 }) => {
+
+
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -66,12 +68,19 @@ const Action = ({
   const [modalopen, setOpen] = useState(false);
 
   const handleOpen = () => {
-    setOpen(!modalopen);
+    setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
+
+  const EditClick = () => {
+    handleClickEditPatient();
+    handleOpen();
+  };
+
+  console.log("this is modal" , modalopen)
 
   const open = Boolean(anchorEl);
   const idPopover = open ? "simple-popover" : undefined;
@@ -101,10 +110,7 @@ const Action = ({
             <Button
               fullWidth
               sx={{ display: "flex", justifyContent: "start" }}
-              onClick={() => {
-                handleOpen();
-                handleClickEditPatient()
-              }}
+              onClick={() => EditClick()}
             >
               <img
                 src="../../../public/resources/edit.png"
@@ -154,7 +160,7 @@ const Action = ({
             sx={{ display: "flex", justifyContent: "start" }}
             onClick={() => {
               onDelete(id);
-              handlePopOverClose()
+              handlePopOverClose();
             }}
           >
             <img
@@ -265,9 +271,11 @@ interface TableProps {
   handleDelete: () => void;
   actionType: string;
   updateHandler: (updateDataid: string, updateData: patientTable) => void;
-  handleClickEditPatient: ()=> void;
+  handleClickEditPatient: () => void;
   isFilter: boolean;
-  filteredData: patientTable[]
+  filteredData: patientTable[];
+  isStatusFilter: boolean;
+  IsBreedAll: boolean | undefined;
 }
 
 export default function Table({
@@ -279,20 +287,28 @@ export default function Table({
   updateHandler,
   handleClickEditPatient,
   isFilter,
-  filteredData
+  filteredData,
+  isStatusFilter,
+  IsBreedAll,
 }: TableProps) {
+  console.log(filteredData);
 
-  console.log(isFilter)
+  // console.log(IsBreedAll)
 
-  console.log(initialData)
+  console.log(isFilter);
 
-  console.log(filteredData)
+  console.log(
+    "data",
+    isFilter || isStatusFilter || IsBreedAll ? filteredData : initialData
+  );
 
   return (
     <Paper sx={{ height: 400, width: "100%", border: 0 }}>
       <StyledDataGrid
         pagination
-        rows={isFilter ? filteredData : initialData}
+        rows={
+          isFilter || isStatusFilter || IsBreedAll ? filteredData : initialData
+        }
         columns={columns.map((col) => {
           if (col.field === "Action") {
             return {
@@ -320,7 +336,14 @@ export default function Table({
         onClose={handleSnackBarClose}
       >
         <Alert severity="success" variant="filled">
-        Patient is successfully {actionType === "create" ? "Created" : actionType === "delete" ? "Deleted" : actionType === "update" ? "Updated" : "Invalid" }{" "}
+          Patient is successfully{" "}
+          {actionType === "create"
+            ? "Created"
+            : actionType === "delete"
+            ? "Deleted"
+            : actionType === "update"
+            ? "Updated"
+            : "Invalid"}{" "}
           <IconButton
             size="small"
             aria-label="close"
