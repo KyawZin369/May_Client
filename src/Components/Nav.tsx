@@ -12,7 +12,7 @@ export default function Nav() {
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box sx={{ marginLeft: "20px" }}>
           <img
-            src="../../public/resources/Logo(2).png"
+            src="/resources/Logo(2).png"
             alt="May Clinic Logo"
             style={{ margin: "10px" }}
           />

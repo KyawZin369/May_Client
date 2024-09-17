@@ -112,7 +112,7 @@ const Action = ({
               onClick={() => EditClick()}
             >
               <img
-                src="../../../public/resources/edit.png"
+                src="/resources/edit.png"
                 alt="edit"
                 style={{ marginRight: "20px" }}
               />
@@ -163,7 +163,7 @@ const Action = ({
             }}
           >
             <img
-              src="../../../public/resources/delete.png"
+              src="/resources/delete.png"
               alt="delete"
               style={{ marginRight: "20px" }}
             />
